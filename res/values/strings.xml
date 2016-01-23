@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">FlowLayoutDemo</string>
+    <string name="hello_world">Hello world!</string>
+
+    <string name="profile_material_interests_more">other %s</string>
+    <string name="profile_material_interests_more_collapse">collapse</string>
+    
+     <string-array name="texts">
+        <item>electro</item>
+        <item>hyper</item>
+        <item>super</item>
+        <item>magic</item>
+        <item>origin</item>
+        <item>ultra</item>
+        <item>zygote</item>
+        <item>titan</item>
+        <item>midas</item>
+        <item>yogurt</item>
+        <item>network</item>
+        <item>extra</item>
+        <item>brick</item>
+        <item>invul</item>
+        <item>clay</item>
+        <item>fog</item>
+        <item>glass</item>
+        <item>kelly</item>
+        <item>water</item>
+        <item>win</item>
+        <item>ripple</item>
+        <item>tiny</item>
+        <item>tower</item>
+        <item>android</item>
+        <item>looking</item>
+        <item>step</item>
+        <item>alex</item>
+        <item>flat</item>
+        <item>happy</item>
+        <item>health</item>
+    </string-array>
+    
+     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. \nSuspendisse aliquam vel eros vel cursus. \nVivamus cursus metus justo, ut congue sem molestie quis. \nPhasellus pulvinar ultrices quam, non ultrices quam tempus vel. \nNunc congue fringilla libero, vel vulputate nulla semper vitae. \nDonec tincidunt porta elit. \nMorbi id libero dignissim, tincidunt ex vitae, mattis dolor. \nInteger in orci et arcu rhoncus placerat. \nProin mauris ex, laoreet vel faucibus ut, euismod a turpis. \nUt eget felis ultricies est efficitur viverra. \nNulla semper arcu a cursus faucibus.</string>
+        
+</resources>

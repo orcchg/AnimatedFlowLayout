@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+   xmlns:mamba="http://schemas.android.com/apk/res-auto"
+   android:layout_width="match_parent"
+   android:layout_height="match_parent"
+   android:layout_margin="40dp">
+   
+    <LinearLayout
+        android:layout_width="match_parent"
+   		android:layout_height="match_parent"
+   		android:orientation="vertical">
+   		
+        <TextView
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="16dp"
+	        android:text="@string/lorem"
+	        android:textSize="14sp"/>
+
+	    <com.example.flowlayoutdemo.InterestsFlowLayout
+	        android:id="@+id/interests_container"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="16dp"
+	        mamba:rowsCount="4"
+	        mamba:verticalSpacing="@dimen/interestVerticalSpacing"
+	        mamba:horizontalSpacing="@dimen/interestHorizontalSpacing"/>
+	    
+	    <TextView
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="16dp"
+	        android:text="@string/lorem"
+	        android:textSize="14sp"/>
+	    
+	    </LinearLayout>
+</ScrollView>
