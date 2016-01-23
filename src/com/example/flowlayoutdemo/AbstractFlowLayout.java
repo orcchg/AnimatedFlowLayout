@@ -1,21 +1,26 @@
 package com.example.flowlayoutdemo;
 
 import android.animation.LayoutTransition;
+import android.animation.LayoutTransition.TransitionListener;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.support.annotation.IntDef;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -23,8 +28,9 @@ import java.util.List;
  */
 public class AbstractFlowLayout extends ViewGroup {
     protected final String TAG = this.getClass().getSimpleName();
+    private static final int mDotsViewId = 1000;
 
-    private List<WeakReference<View>> mLastRowViews;
+    private Set<WeakReference<View>> mLastRowViews;
 
     public static final int STATE_EXPANDED = 0;
     public static final int STATE_COLLAPSED = 1;
@@ -36,10 +42,11 @@ public class AbstractFlowLayout extends ViewGroup {
     protected final int HORIZONTAL_SPACING;
     protected final int ALLOWED_ROWS_COUNT;
 
-    protected int mHeight;
+    protected int mHeight, mExpandedHeight;
     protected int mRestItems = 0;
     protected @LayoutState int mCurrentState = STATE_COLLAPSED;
     protected boolean mIsAnimated = false;
+    protected boolean mShouldDeferMeasure = false;
 
     protected View mDotsView;
     protected AbstractFlowLayoutTransition mLayoutTransition;
@@ -77,13 +84,42 @@ public class AbstractFlowLayout extends ViewGroup {
         HORIZONTAL_SPACING = a.getDimensionPixelSize(R.styleable.FlowLayout_horizontalSpacing, defHorizontalSpacing);
         a.recycle();
 
-        mLastRowViews = new ArrayList<WeakReference<View>>();
+        mLastRowViews = new HashSet<WeakReference<View>>();
     }
 
     public void enableLayoutTransition(boolean isEnabled) {
         mIsAnimated = isEnabled;
         if (isEnabled && mLayoutTransition == null) {
             mLayoutTransition = new AbstractFlowLayoutTransition(this);
+            mLayoutTransition.addTransitionListener(new TransitionListener() {
+              @Override
+              public void startTransition(LayoutTransition transition, ViewGroup container, View view,
+                  int transitionType) {
+                // TODO Auto-generated method stub
+                
+              }
+              
+              @Override
+              public void endTransition(LayoutTransition transition, ViewGroup container, View view,
+                  int transitionType) {
+                if (view == mDotsView) {
+                  String str = "";
+                  switch (transitionType) {
+                    case LayoutTransition.CHANGE_APPEARING:
+                      str = "Expansion ended";
+                      break;
+                    case LayoutTransition.CHANGE_DISAPPEARING:
+                      str = "Collapsion ended";
+                      mShouldDeferMeasure = false;
+                      requestLayout();
+                      break;
+                  }
+                  if (!TextUtils.isEmpty(str)) {
+                    Toast.makeText(getContext(), str, Toast.LENGTH_SHORT).show();
+                  }
+                }
+              }
+            });
         }
         AbstractFlowLayoutTransition layoutTransition = isEnabled ? mLayoutTransition : null;
         setLayoutTransition(layoutTransition);
@@ -99,21 +135,22 @@ public class AbstractFlowLayout extends ViewGroup {
     };
 
     protected void onDotsViewClicked() {
-        mCurrentState = mCurrentState == STATE_COLLAPSED ? STATE_EXPANDED : STATE_COLLAPSED;
-        requestLayout();
-//        switch (mCurrentState) {
-//            case STATE_COLLAPSED:
-//                collapse();
-//                break;
-//            case STATE_EXPANDED:
-//                expand();
-//                break;
-//        }
-        invalidateLastRowViews();
-
-        if (mOnExpandChangedListener != null) {
-            mOnExpandChangedListener.onExpandChanged(mCurrentState);
+      @LayoutState int oldState = mCurrentState;
+      mCurrentState = mCurrentState == STATE_COLLAPSED ? STATE_EXPANDED : STATE_COLLAPSED;
+      
+        if (mIsAnimated && oldState == STATE_EXPANDED) {
+         // wait till animation finished - then measure
+          mShouldDeferMeasure = true;
         }
+        performLayoutRequest();
+    }
+    
+    private void performLayoutRequest() {
+      requestLayout();
+      invalidateLastRowViews();
+      if (mOnExpandChangedListener != null) {
+        mOnExpandChangedListener.onExpandChanged(mCurrentState);
+      }
     }
 
     /* Measuring */
@@ -163,12 +200,21 @@ public class AbstractFlowLayout extends ViewGroup {
                 xpos += childw + HORIZONTAL_SPACING;
             }
         }
+        
+        if (mCurrentState == STATE_EXPANDED) {
+          mExpandedHeight = mHeight * currentRow;
+        }
+        
         if (View.MeasureSpec.getMode(heightMeasureSpec) == View.MeasureSpec.UNSPECIFIED) {
             height = ypos + mHeight;
         } else if (View.MeasureSpec.getMode(heightMeasureSpec) == View.MeasureSpec.AT_MOST) {
             if (ypos + mHeight < height) {
                 height = ypos + mHeight;
             }
+        }
+        
+        if (mShouldDeferMeasure) {
+          height = mExpandedHeight;
         }
 
         setMeasuredDimension(width, height);
@@ -200,8 +246,10 @@ public class AbstractFlowLayout extends ViewGroup {
                         int dotsXpos = getPaddingLeft();
                         int dotsYpos = ypos + mHeight;
                         // Add dots view at the end of flow
-                        removeView(mDotsView);
-                        addView(mDotsView);
+                        mDotsView.setId(mDotsViewId);
+                        if (findViewById(mDotsViewId) == null) {
+                          addView(mDotsView);
+                        }
                         if (xpos + dotsViewWidth <= width) {  // same line
                             dotsXpos = xpos;
                             dotsYpos = ypos;
@@ -256,6 +304,9 @@ public class AbstractFlowLayout extends ViewGroup {
            // TODO:
             //disableTransitionType(APPEARING);
         //disableTransitionType(DISAPPEARING);
+//            setAnimator(APPEARING, null);
+//            setAnimator(DISAPPEARING, null);
+            
 //            disableTransitionType(CHANGE_APPEARING);
 //        disableTransitionType(CHANGE_DISAPPEARING);
 //        disableTransitionType(CHANGING);

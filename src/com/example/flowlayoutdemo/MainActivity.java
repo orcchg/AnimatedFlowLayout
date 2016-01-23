@@ -22,6 +22,6 @@ public class MainActivity extends Activity {
       mFlowLayout.addView(itemView);
     }
     
-    //mFlowLayout.enableLayoutTransition(true);
+    mFlowLayout.enableLayoutTransition(true);
   }
 }
