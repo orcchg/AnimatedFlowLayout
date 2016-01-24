@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- 
 /*
  * Copyright (C) 2016 Maxim Alov <alovmax@yandex.ru>
  *
@@ -15,13 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-  -->
-<resources>
-    
-    <declare-styleable name="FlowLayout">
-        <attr name="rowsCount" format="integer" />
-        <attr name="verticalSpacing" format="dimension" />
-        <attr name="horizontalSpacing" format="dimension" />
-    </declare-styleable>
-    
-</resources>
+ 
