@@ -3,8 +3,8 @@
     android:id="@+id/text"
 	 android:layout_width="match_parent"
 	 android:layout_height="match_parent"
-	 android:padding="36dp"
-	 android:textSize="24sp"
+	 android:padding="@dimen/blob_padding"
+	 android:textSize="@dimen/blob_text_size"
 	 android:textStyle="bold"
 	 android:textColor="@android:color/holo_red_dark"
 	 android:background="@drawable/shape_active"/>

@@ -10,19 +10,19 @@ import android.widget.TextView;
 /**
  * Created by alov on 08.12.15.
  */
-public class InterestsFlowLayout extends AbstractFlowLayout {
-    public InterestsFlowLayout(Context context) {
+public class BlobsFlowLayout extends AbstractFlowLayout {
+    public BlobsFlowLayout(Context context) {
         this(context, null);
     }
 
-    public InterestsFlowLayout(Context context, AttributeSet attrs) {
+    public BlobsFlowLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public InterestsFlowLayout(Context context, AttributeSet attrs, int defStyle) {
+    public BlobsFlowLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        mDotsView = LayoutInflater.from(context).inflate(R.layout.profile_interest_blob_more, null, false);
-        mDotsView.setOnClickListener(mDotsViewClickListener);
+        mMoreView = LayoutInflater.from(context).inflate(R.layout.blob_more, null, false);
+        mMoreView.setOnClickListener(mDotsViewClickListener);
         setUpLayoutChangeListener();
     }
 
@@ -34,10 +34,10 @@ public class InterestsFlowLayout extends AbstractFlowLayout {
             public void onGlobalLayout() {
                 switch (mCurrentState) {
                     case STATE_COLLAPSED:
-                        ((TextView) mDotsView).setText(String.format(getResources().getString(R.string.profile_material_interests_more), mRestItems));
+                        ((TextView) mMoreView).setText(String.format(getResources().getString(R.string.more), mRestItems));
                         break;
                     case STATE_EXPANDED:
-                        ((TextView) mDotsView).setText(getResources().getString(R.string.profile_material_interests_more_collapse));
+                        ((TextView) mMoreView).setText(getResources().getString(R.string.more_collapse));
                         break;
                 }
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {

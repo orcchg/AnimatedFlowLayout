@@ -10,16 +10,12 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
 import android.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -48,8 +44,8 @@ public class AbstractFlowLayout extends ViewGroup {
     protected boolean mIsAnimated = false;
     protected boolean mShouldDeferMeasure = false;
 
-    protected View mDotsView;
-    protected AbstractFlowLayoutTransition mLayoutTransition;
+    protected View mMoreView;
+    protected LayoutTransition mLayoutTransition;
 
     public interface OnExpandChangedListener {
         void onExpandChanged(@LayoutState int newState);
@@ -75,8 +71,8 @@ public class AbstractFlowLayout extends ViewGroup {
         super(context, attrs, defStyle);
 
         Resources resources = context.getResources();
-        int defVerticalSpacing = resources.getDimensionPixelSize(R.dimen.interestVerticalSpacing);
-        int defHorizontalSpacing = resources.getDimensionPixelSize(R.dimen.interestHorizontalSpacing);
+        int defVerticalSpacing = resources.getDimensionPixelSize(R.dimen.vertical_spacing);
+        int defHorizontalSpacing = resources.getDimensionPixelSize(R.dimen.horizontal_spacing);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout, defStyle, 0);
         ALLOWED_ROWS_COUNT = a.getInt(R.styleable.FlowLayout_rowsCount, 0);
@@ -90,19 +86,16 @@ public class AbstractFlowLayout extends ViewGroup {
     public void enableLayoutTransition(boolean isEnabled) {
         mIsAnimated = isEnabled;
         if (isEnabled && mLayoutTransition == null) {
-            mLayoutTransition = new AbstractFlowLayoutTransition(this);
+            mLayoutTransition = new LayoutTransition();
             mLayoutTransition.addTransitionListener(new TransitionListener() {
               @Override
-              public void startTransition(LayoutTransition transition, ViewGroup container, View view,
-                  int transitionType) {
-                // TODO Auto-generated method stub
-                
+              public void startTransition(LayoutTransition transition, ViewGroup container, View view, int transitionType) {
+                // no-op
               }
               
               @Override
-              public void endTransition(LayoutTransition transition, ViewGroup container, View view,
-                  int transitionType) {
-                if (view == mDotsView) {
+              public void endTransition(LayoutTransition transition, ViewGroup container, View view, int transitionType) {
+                if (view == mMoreView) {
                   String str = "";
                   switch (transitionType) {
                     case LayoutTransition.CHANGE_APPEARING:
@@ -121,7 +114,7 @@ public class AbstractFlowLayout extends ViewGroup {
               }
             });
         }
-        AbstractFlowLayoutTransition layoutTransition = isEnabled ? mLayoutTransition : null;
+        LayoutTransition layoutTransition = isEnabled ? mLayoutTransition : null;
         setLayoutTransition(layoutTransition);
     }
 
@@ -183,11 +176,11 @@ public class AbstractFlowLayout extends ViewGroup {
                     ypos += mHeight;
                     if (mCurrentState == STATE_COLLAPSED &&
                         ALLOWED_ROWS_COUNT > 0 &&
-                        mDotsView != null && mDotsView.getVisibility() != View.GONE &&
+                        mMoreView != null && mMoreView.getVisibility() != View.GONE &&
                         currentRow == ALLOWED_ROWS_COUNT) {
                         // measure dots view
-                        mDotsView.measure(widthAtMostSpec, childHeightMeasureSpec);
-                        int dotsViewWidth = mDotsView.getMeasuredWidth();
+                        mMoreView.measure(widthAtMostSpec, childHeightMeasureSpec);
+                        int dotsViewWidth = mMoreView.getMeasuredWidth();
                         if (xpos + dotsViewWidth <= width) {  // same line
                             ypos -= mHeight;
                         }
@@ -239,23 +232,23 @@ public class AbstractFlowLayout extends ViewGroup {
                 if (xpos + childw > width) {
                     if (mCurrentState == STATE_COLLAPSED &&
                         ALLOWED_ROWS_COUNT > 0 &&
-                        mDotsView != null && mDotsView.getVisibility() != View.GONE &&
+                        mMoreView != null && mMoreView.getVisibility() != View.GONE &&
                         currentRow == ALLOWED_ROWS_COUNT) {
                         // layout dots view
-                        int dotsViewWidth = mDotsView.getMeasuredWidth();
+                        int dotsViewWidth = mMoreView.getMeasuredWidth();
                         int dotsXpos = getPaddingLeft();
                         int dotsYpos = ypos + mHeight;
                         // Add dots view at the end of flow
-                        mDotsView.setId(mDotsViewId);
+                        mMoreView.setId(mDotsViewId);
                         if (findViewById(mDotsViewId) == null) {
-                          addView(mDotsView);
+                          addView(mMoreView);
                         }
                         if (xpos + dotsViewWidth <= width) {  // same line
                             dotsXpos = xpos;
                             dotsYpos = ypos;
                         }
 
-                        mDotsView.layout(dotsXpos, dotsYpos, dotsXpos + dotsViewWidth, dotsYpos + childh);
+                        mMoreView.layout(dotsXpos, dotsYpos, dotsXpos + dotsViewWidth, dotsYpos + childh);
                         if (mRestItems == 0) {
                             mRestItems = count - i;
                         }
@@ -286,108 +279,9 @@ public class AbstractFlowLayout extends ViewGroup {
         int visibility = mCurrentState == STATE_COLLAPSED ? View.GONE : View.VISIBLE;
         for (WeakReference<View> viewRef : mLastRowViews) {
             View child = viewRef.get();
-            if (child != null && child != mDotsView) {
+            if (child != null && child != mMoreView) {
                 child.setVisibility(visibility);
             }
         }
     }
-
-    /* Transition animation */
-    // --------------------------------------------------------------------------------------------
-    private static class AbstractFlowLayoutTransition extends LayoutTransition {
-        private static final int DEFAULT_DURATION = 300;  // ms
-        private WeakReference<AbstractFlowLayout> mLayoutRef;
-
-        public AbstractFlowLayoutTransition(AbstractFlowLayout layout) {
-            mLayoutRef = new WeakReference<AbstractFlowLayout>(layout);
-
-           // TODO:
-            //disableTransitionType(APPEARING);
-        //disableTransitionType(DISAPPEARING);
-//            setAnimator(APPEARING, null);
-//            setAnimator(DISAPPEARING, null);
-            
-//            disableTransitionType(CHANGE_APPEARING);
-//        disableTransitionType(CHANGE_DISAPPEARING);
-//        disableTransitionType(CHANGING);
-            //setStartDelay(CHANGE_APPEARING, 0);
-            //setStartDelay(CHANGE_DISAPPEARING, 0);
-
-//            PropertyValuesHolder pvhLeft = PropertyValuesHolder.ofInt("left", 0, 1);
-//            PropertyValuesHolder pvhTop = PropertyValuesHolder.ofInt("top", 0, 1);
-//            PropertyValuesHolder pvhRight = PropertyValuesHolder.ofInt("right", 0, 1);
-//            PropertyValuesHolder pvhBottom = PropertyValuesHolder.ofInt("bottom", 0, 1);
-//            ObjectAnimator expandAnimator = ObjectAnimator.ofPropertyValuesHolder((Object) null, pvhLeft, pvhTop, pvhRight, pvhBottom);
-//            expandAnimator.setDuration(DEFAULT_DURATION);
-//            expandAnimator.setStartDelay(0);
-//            expandAnimator.setInterpolator(new DecelerateInterpolator());
-//            ObjectAnimator collapseAnimator = expandAnimator.clone();
-//            collapseAnimator.setStartDelay(DEFAULT_DURATION);
-//
-//            setAnimator(CHANGE_APPEARING, expandAnimator);
-//            setAnimator(CHANGE_DISAPPEARING, collapseAnimator);
-        }
-    }
-    
-    public void expand() {
-      expand(this);
-    }
-    
-    public void collapse() {
-      collapse(this);
-    }
-
-    public void expand(final View v) {
-      v.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-      final int targetHeight = v.getMeasuredHeight();
-
-      // Older versions of android (pre API 21) cancel animations for views with a height of 0.
-      v.getLayoutParams().height = 1;
-      v.setVisibility(View.VISIBLE);
-      Animation a = new Animation()
-      {
-          @Override
-          protected void applyTransformation(float interpolatedTime, Transformation t) {
-              v.getLayoutParams().height = interpolatedTime == 1
-                      ? LayoutParams.WRAP_CONTENT
-                      : (int)(targetHeight * interpolatedTime);
-              v.requestLayout();
-          }
-
-          @Override
-          public boolean willChangeBounds() {
-              return true;
-          }
-      };
-
-      // 1dp/ms
-      a.setDuration((int)(targetHeight / v.getContext().getResources().getDisplayMetrics().density));
-      v.startAnimation(a);
-  }
-
-  public void collapse(final View v) {
-      final int initialHeight = v.getMeasuredHeight();
-
-      Animation a = new Animation()
-      {
-          @Override
-          protected void applyTransformation(float interpolatedTime, Transformation t) {
-              if(interpolatedTime == 1){
-                  v.setVisibility(View.GONE);
-              }else{
-                  v.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
-                  v.requestLayout();
-              }
-          }
-
-          @Override
-          public boolean willChangeBounds() {
-              return true;
-          }
-      };
-
-      // 1dp/ms
-      a.setDuration((int)(initialHeight / v.getContext().getResources().getDisplayMetrics().density));
-      v.startAnimation(a);
-  }
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-   xmlns:mamba="http://schemas.android.com/apk/res-auto"
+   xmlns:flow="http://schemas.android.com/apk/res-auto"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
-   android:layout_margin="40dp">
+   android:layout_margin="@dimen/margin_main">
    
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,25 +13,25 @@
         <TextView
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:layout_marginTop="16dp"
+	        android:layout_marginTop="@dimen/margin_top"
 	        android:text="@string/lorem"
-	        android:textSize="14sp"/>
+	        android:textSize="@dimen/blob_text_size"/>
 
-	    <com.example.flowlayoutdemo.InterestsFlowLayout
+	    <com.example.flowlayoutdemo.BlobsFlowLayout
 	        android:id="@+id/interests_container"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:layout_marginTop="16dp"
-	        mamba:rowsCount="4"
-	        mamba:verticalSpacing="@dimen/interestVerticalSpacing"
-	        mamba:horizontalSpacing="@dimen/interestHorizontalSpacing"/>
+	        android:layout_marginTop="@dimen/margin_top"
+	        flow:rowsCount="4"
+	        flow:verticalSpacing="@dimen/vertical_spacing"
+	        flow:horizontalSpacing="@dimen/horizontal_spacing"/>
 	    
 	    <TextView
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:layout_marginTop="16dp"
+	        android:layout_marginTop="@dimen/margin_top"
 	        android:text="@string/lorem"
-	        android:textSize="14sp"/>
+	        android:textSize="@dimen/blob_text_size"/>
 	    
 	    </LinearLayout>
 </ScrollView>

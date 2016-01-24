@@ -4,8 +4,8 @@
     <string name="app_name">FlowLayoutDemo</string>
     <string name="hello_world">Hello world!</string>
 
-    <string name="profile_material_interests_more">other %s</string>
-    <string name="profile_material_interests_more_collapse">collapse</string>
+    <string name="more">other %s</string>
+    <string name="more_collapse">collapse</string>
     
      <string-array name="texts">
         <item>electro</item>

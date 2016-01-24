@@ -7,23 +7,23 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-public class InterestItem extends FrameLayout {
+public class BlobItem extends FrameLayout {
 
   View mRootView;
   TextView mTextView;
   
-  public InterestItem(Context context) {
+  public BlobItem(Context context) {
     this(context, null);
   }
   
-  public InterestItem(Context context, AttributeSet attrs) {
+  public BlobItem(Context context, AttributeSet attrs) {
     this(context, attrs, 0);
   }
   
-  public InterestItem(Context context, AttributeSet attrs, int defStyleAttr) {
+  public BlobItem(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
     
-    mRootView = LayoutInflater.from(context).inflate(R.layout.profile_interest_blob, this, true);
+    mRootView = LayoutInflater.from(context).inflate(R.layout.blob, this, true);
     mTextView = (TextView) mRootView.findViewById(R.id.text);
   }
   
